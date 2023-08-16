@@ -5,9 +5,9 @@ using ImGuiGLFWBackend
 using Preferences
 const opengl_major_version = parse(Int, @load_preference("opengl_major_version", "3"))
 if opengl_major_version == 2
-using ImGuiOpenGL2Backend
+    using ImGuiOpenGL2Backend
 elseif opengl_major_version >= 3
-using ImGuiOpenGLBackend
+    using ImGuiOpenGLBackend
 end
 
 using CSyntax
@@ -58,7 +58,13 @@ function c_set!(x::Ptr{NTuple{N,T}}, i, v) where {N,T}
     unsafe_store!(Ptr{T}(x), v, Integer(i)+1)
 end
 
+function isViewportEnabled()
+    io = GetIO()
+    return unsafe_load(io.ConfigFlags) & ImGuiConfigFlags_ViewportsEnable > 0
+end
+
 include("wrapper.jl")
+include("renderer.jl")
 
 const IMGUI_VERSION = unsafe_string(GetVersion())
 
